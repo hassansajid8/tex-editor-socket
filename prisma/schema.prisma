@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Projects {
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  title     String
+  body      String?
+  createdBy String?
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  Users     Users?   @relation(fields: [createdBy], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "public_Projects_createdBy_fkey")
+}
+
+model Users {
+  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  email      String     @unique
+  name       String
+  password   String     @db.VarChar
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  Projects   Projects[]
+}
